@@ -424,7 +424,11 @@ func (s *ServiceConfig) Init() error {
 		return err
 	}
 
-	return s.initEndpoints()
+	if err := s.initEndpoints(); err != nil {
+		return err
+	}
+
+	return validateStreamingService(s)
 }
 
 func (s *ServiceConfig) Normalize() {
@@ -519,6 +523,10 @@ func (s *ServiceConfig) initEndpoints() error {
 		e.Endpoint = s.uriParser.GetEndpointPath(e.Endpoint, inputParams)
 
 		s.initEndpointDefaults(i)
+
+		if err := validateStreamingEndpoint(e); err != nil {
+			return err
+		}
 
 		if e.OutputEncoding == encoding.NOOP && len(e.Backend) > 1 {
 			return errInvalidNoOpEncoding
