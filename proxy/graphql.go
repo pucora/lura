@@ -93,6 +93,10 @@ func NewGraphQLMiddleware(logger logging.Logger, remote *config.Backend) Middlew
 					return nil, err
 				}
 
+				if req.Headers == nil {
+					req.Headers = make(map[string][]string)
+				}
+
 				req.Body = io.NopCloser(bytes.NewReader([]byte{}))
 				req.Method = string(method)
 				req.Headers["Content-Length"] = []string{"0"}
@@ -125,6 +129,10 @@ func NewGraphQLMiddleware(logger logging.Logger, remote *config.Backend) Middlew
 			b, err := generateBodyFn(req)
 			if err != nil {
 				return nil, err
+			}
+
+			if req.Headers == nil {
+				req.Headers = make(map[string][]string)
 			}
 
 			req.Body = io.NopCloser(bytes.NewReader(b))
