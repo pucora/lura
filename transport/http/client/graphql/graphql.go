@@ -20,7 +20,7 @@ import (
 )
 
 // Namespace is the key for the backend's extra config
-const Namespace = "github.com/velonetics/velonetics/transport/http/client/graphql"
+const Namespace = "github.com/velonetics/lura/v2/transport/http/client/graphql"
 
 // OperationType contains all the operations allowed by graphql
 type OperationType string

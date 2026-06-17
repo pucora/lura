@@ -33,6 +33,8 @@ func NewGraphQLMiddleware(logger logging.Logger, remote *config.Backend) Middlew
 		return emptyMiddlewareFallback(logger)
 	}
 
+	method := resolveGraphQLHTTPMethod(opt, remote)
+
 	extractor := graphql.New(*opt)
 	var generateBodyFn func(*Request) ([]byte, error)
 	var generateQueryFn func(*Request) (url.Values, error)
@@ -80,11 +82,11 @@ func NewGraphQLMiddleware(logger logging.Logger, remote *config.Backend) Middlew
 				remote.ParentEndpoint,
 				remote.URLPattern,
 				opt.Type,
-				opt.Method,
+				method,
 			),
 		)
 
-		if opt.Method == graphql.MethodGet {
+		if method == graphql.MethodGet {
 			return func(ctx context.Context, req *Request) (*Response, error) {
 				q, err := generateQueryFn(req)
 				if err != nil {
@@ -92,7 +94,7 @@ func NewGraphQLMiddleware(logger logging.Logger, remote *config.Backend) Middlew
 				}
 
 				req.Body = io.NopCloser(bytes.NewReader([]byte{}))
-				req.Method = string(opt.Method)
+				req.Method = string(method)
 				req.Headers["Content-Length"] = []string{"0"}
 				// even when there is no content, we just set the content-type
 				// header to be safe if the server side checks it:
@@ -106,6 +108,14 @@ func NewGraphQLMiddleware(logger logging.Logger, remote *config.Backend) Middlew
 				} else {
 					req.Query = q
 				}
+				if req.URL != nil && len(q) > 0 {
+					encoded := q.Encode()
+					if req.URL.RawQuery != "" {
+						req.URL.RawQuery += "&" + encoded
+					} else {
+						req.URL.RawQuery = encoded
+					}
+				}
 
 				return next[0](ctx, req)
 			}
@@ -118,11 +128,33 @@ func NewGraphQLMiddleware(logger logging.Logger, remote *config.Backend) Middlew
 			}
 
 			req.Body = io.NopCloser(bytes.NewReader(b))
-			req.Method = string(opt.Method)
+			req.Method = string(method)
 			req.Headers["Content-Length"] = []string{strconv.Itoa(len(b))}
 			req.Headers["Content-Type"] = []string{"application/json"}
 
 			return next[0](ctx, req)
 		}
 	}
+}
+
+// resolveGraphQLHTTPMethod picks the HTTP verb for the upstream GraphQL call.
+// Priority: extra_config.method → backend.method → endpoint.method → POST.
+func resolveGraphQLHTTPMethod(opt *graphql.Options, remote *config.Backend) graphql.OperationMethod {
+	if tmp, ok := remote.ExtraConfig[graphql.Namespace]; ok {
+		if extra, ok := tmp.(map[string]interface{}); ok {
+			if m, ok := extra["method"].(string); ok && m != "" {
+				return graphql.OperationMethod(strings.ToUpper(m))
+			}
+		}
+	}
+	if remote.Method != "" {
+		return graphql.OperationMethod(strings.ToUpper(remote.Method))
+	}
+	if remote.ParentEndpointMethod != "" {
+		return graphql.OperationMethod(strings.ToUpper(remote.ParentEndpointMethod))
+	}
+	if opt.Method == graphql.MethodGet {
+		return graphql.MethodGet
+	}
+	return graphql.MethodPost
 }
