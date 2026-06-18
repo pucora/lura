@@ -103,22 +103,16 @@ func NewGraphQLMiddleware(logger logging.Logger, remote *config.Backend) Middlew
 				// even when there is no content, we just set the content-type
 				// header to be safe if the server side checks it:
 				req.Headers["Content-Type"] = []string{"application/json"}
-				if req.Query != nil {
-					for k, vs := range q {
-						for _, v := range vs {
-							req.Query.Add(k, v)
-						}
-					}
-				} else {
-					req.Query = q
+				if req.Query == nil {
+					req.Query = url.Values{}
 				}
-				if req.URL != nil && len(q) > 0 {
-					encoded := q.Encode()
-					if req.URL.RawQuery != "" {
-						req.URL.RawQuery += "&" + encoded
-					} else {
-						req.URL.RawQuery = encoded
+				for k, vs := range q {
+					for _, v := range vs {
+						req.Query.Set(k, v)
 					}
+				}
+				if req.URL != nil {
+					req.URL.RawQuery = req.Query.Encode()
 				}
 
 				return next[0](ctx, req)

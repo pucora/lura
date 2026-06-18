@@ -43,7 +43,16 @@ func CustomErrorEndpointHandler(logger logging.Logger, errF server.ToHTTPError) 
 		logPrefix := "[ENDPOINT: " + configuration.Endpoint + "]"
 
 		return func(c *gin.Context) {
-			requestCtx, cancel := context.WithTimeout(c, configuration.Timeout)
+			streaming := proxy.IsStreamingEndpoint(configuration)
+			var requestCtx context.Context
+			var cancel context.CancelFunc
+			if streaming {
+				requestCtx = c.Request.Context()
+				cancel = func() {}
+			} else {
+				requestCtx, cancel = context.WithTimeout(c, configuration.Timeout)
+			}
+			defer cancel()
 
 			c.Header(core.VeloneticsHeaderName, core.VeloneticsHeaderValue)
 
@@ -114,7 +123,6 @@ func CustomErrorEndpointHandler(logger logging.Logger, errF server.ToHTTPError) 
 			}
 
 			render(c, response)
-			cancel()
 		}
 	}
 }

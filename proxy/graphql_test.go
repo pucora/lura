@@ -269,6 +269,38 @@ func TestNewGraphQLMiddleware_queryGET_mergesURL(t *testing.T) {
 	}
 }
 
+func TestNewGraphQLMiddleware_queryGET_noDuplicateQuery(t *testing.T) {
+	query := "{ ping }"
+	mw := NewGraphQLMiddleware(
+		logging.NoOp,
+		graphqlBackend(map[string]interface{}{
+			"type":  "query",
+			"query": query,
+		}, func(b *config.Backend) {
+			b.Method = "GET"
+		}),
+	)
+
+	prxy := mw(func(ctx context.Context, req *Request) (*Response, error) {
+		if req.Query == nil {
+			t.Fatal("expected query values")
+		}
+		if got := req.Query["query"]; len(got) != 1 || got[0] != query {
+			t.Fatalf("unexpected query values: %v", got)
+		}
+		return &Response{Data: map[string]interface{}{"ok": true}}, nil
+	})
+
+	_, err := prxy(context.Background(), &Request{
+		Query: url.Values{"query": []string{"stale"}},
+		URL:   &url.URL{Scheme: "http", Host: "127.0.0.1:8081", Path: "/graphql", RawQuery: "query=stale"},
+		Headers: map[string][]string{},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestNewGraphQLMiddleware_noConfigPassthrough(t *testing.T) {
 	mw := NewGraphQLMiddleware(logging.NoOp, &config.Backend{})
 	prxy := mw(func(ctx context.Context, req *Request) (*Response, error) {
