@@ -51,7 +51,16 @@ func CustomEndpointHandlerWithHTTPError(rb RequestBuilder, errF server.ToHTTPErr
 				return
 			}
 
-			requestCtx, cancel := context.WithTimeout(r.Context(), configuration.Timeout)
+			streaming := proxy.IsStreamingEndpoint(configuration)
+			var requestCtx context.Context
+			var cancel context.CancelFunc
+			if streaming {
+				requestCtx = r.Context()
+				cancel = func() {}
+			} else {
+				requestCtx, cancel = context.WithTimeout(r.Context(), configuration.Timeout)
+			}
+			defer cancel()
 
 			response, err := prxy(requestCtx, rb(r, configuration.QueryString, headersToSend))
 
@@ -86,13 +95,11 @@ func CustomEndpointHandlerWithHTTPError(rb RequestBuilder, errF server.ToHTTPErr
 					} else {
 						http.Error(w, err.Error(), errF(err))
 					}
-					cancel()
 					return
 				}
 			}
 
 			render(w, response)
-			cancel()
 		}
 	}
 }

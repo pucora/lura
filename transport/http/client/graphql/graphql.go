@@ -100,7 +100,7 @@ func New(opt Options) *Extractor {
 		if !ok {
 			continue
 		}
-		if val[0] == '{' && val[len(val)-1] == '}' {
+		if len(val) >= 2 && val[0] == '{' && val[len(val)-1] == '}' {
 			replacements = append(replacements, [2]string{k, title.String(val[1:2]) + val[2:len(val)-1]})
 		}
 	}
