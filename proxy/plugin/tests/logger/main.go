@@ -95,8 +95,8 @@ func (registerer) reqsponseModifierFactory(_ map[string]interface{}) func(interf
 	/*
 	   "extra_config":{
 	       "plugin/req-resp-modifier":{
-	           "name":["velonetics-debugger"],
-	           "velonetics-debugger":{
+	           "name":["pucora-debugger"],
+	           "pucora-debugger":{
 	               "A":"foo",
 	               "B":42
 	           }

@@ -42,7 +42,7 @@ func TestLoadWithLogger(t *testing.T) {
 		config.ServiceConfig{
 			ExtraConfig: map[string]interface{}{
 				Namespace: map[string]interface{}{
-					"name": "velonetics-server-example",
+					"name": "pucora-server-example",
 				},
 			},
 		},

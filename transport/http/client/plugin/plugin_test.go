@@ -39,7 +39,7 @@ func TestLoadWithLogger(t *testing.T) {
 	h := hre(&config.Backend{
 		ExtraConfig: map[string]interface{}{
 			Namespace: map[string]interface{}{
-				"name": "velonetics-client-example",
+				"name": "pucora-client-example",
 			},
 		},
 	})

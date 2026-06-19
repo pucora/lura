@@ -10,7 +10,7 @@ import (
 )
 
 // HandlerRegisterer is the symbol the plugin loader will try to load. It must implement the Registerer interface
-var HandlerRegisterer = registerer("velonetics-server-example")
+var HandlerRegisterer = registerer("pucora-server-example")
 
 type registerer string
 
@@ -38,8 +38,8 @@ func (registerer) registerHandlers(_ context.Context, _ map[string]interface{}, 
 	/*
 	   "extra_config":{
 	       "plugin/http-server":{
-	           "name":["velonetics-server-example"],
-	           "velonetics-server-example":{
+	           "name":["pucora-server-example"],
+	           "pucora-server-example":{
 	               "A":"foo",
 	               "B":42
 	           }

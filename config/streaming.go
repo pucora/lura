@@ -12,10 +12,10 @@ import (
 )
 
 const (
-	luaProxyNamespace  = "github.com/pucora/velonetics-lua/proxy"
-	luaRouterNamespace = "github.com/pucora/velonetics-lua/router"
-	martianNamespace   = "github.com/pucora/velonetics-martian"
-	httpcacheNamespace = "github.com/pucora/velonetics-httpcache"
+	luaProxyNamespace  = "github.com/pucora/pucora-lua/proxy"
+	luaRouterNamespace = "github.com/pucora/pucora-lua/router"
+	martianNamespace   = "github.com/pucora/pucora-martian"
+	httpcacheNamespace = "github.com/pucora/pucora-httpcache"
 	proxyNamespace     = "github.com/pucora/pucora/proxy"
 )
 
