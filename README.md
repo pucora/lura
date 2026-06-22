@@ -9,7 +9,7 @@
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fluraproject%2Flura.svg?type=shield&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2Fluraproject%2Flura%2Fv2?ref=badge_shield&issueType=license)
 
 
-An open framework to assemble ultra performance API Gateways with middlewares; formerly known as _Pucora framework_, and core service of the [Pucora API Gateway](http://pucora.io).
+An open framework to assemble ultra performance API Gateways with middlewares; formerly known as _Pucora framework_, and core service of the [Pucora API Gateway](http://pucora.in).
 
 ## Motivation
 
@@ -48,7 +48,7 @@ The source code for the [Lura project](https://luraproject.org) framework. It is
 
 Use this repository if you want to **build from source your API Gateway** or if you want to **reuse the components in another application**.
 
-If you need a fully functional API Gateway you can [download the Pucora binary for your architecture](http://pucora.io/download) or [build it yourself](https://github.com/pucora/pucora-ce).
+If you need a fully functional API Gateway you can [download the Pucora binary for your architecture](http://pucora.in/download) or [build it yourself](https://github.com/pucora/pucora-ce).
 
 
 ## Library Usage
